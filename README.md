@@ -244,5 +244,3 @@ Data is retrieved from a publicly accessible council endpoint and should be used
 ## 👤 Author
 
 Alastair McBride
-BAcc (Hons) Accounting
-Aspiring Data & Business Analytics Professional
