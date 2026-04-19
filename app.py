@@ -13,9 +13,12 @@ uprn = st.text_input("Enter UPRN", value="127072473")
 if st.button("Access current information"):
     try:
         count = update_database(uprn)
-        st.success(f"Retrieved and stored {count} events")
+        if count == 0:
+            st.warning("Retrieved 0 events. Check if the UPRN is valid.")
+        else:
+            st.success(f"Retrieved and stored {count} events")
     except Exception as e:
-        st.error(str(e))
+        st.error(f"Error: {str(e)}")
 
 # --- Display Data ---
 st.subheader("Upcoming Collections")
