@@ -39,4 +39,3 @@ if rows:
         st.write(f"📅 {date} — {type_}")
 else:
     st.info("No data available. Click the button above.")
-```
