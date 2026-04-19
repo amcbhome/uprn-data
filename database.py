@@ -1,13 +1,56 @@
-import os
 import sqlite3
 
-# Ensure the data directory exists
-if not os.path.exists('data'):
-    os.makedirs('data')
+DB_PATH = "data.db"
 
-# Using context manager for database connection
-def get_upcoming_collections(limit=10):
-    with sqlite3.connect('data/collections.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM collections WHERE date > CURRENT_DATE ORDER BY date ASC LIMIT ?", (limit,))
-        return cursor.fetchall()
+def get_connection():
+    return sqlite3.connect(DB_PATH)
+
+def init_db():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS collections (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uprn TEXT,
+        date TEXT,
+        type TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+def insert_collections(uprn, events):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    for event in events:
+        cursor.execute("""
+        INSERT INTO collections (uprn, date, type)
+        VALUES (?, ?, ?)
+        """, (uprn, event["date"], event["type"]))
+
+    conn.commit()
+    conn.close()
+
+
+def get_upcoming_collections(uprn, limit=10):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = f"""
+    SELECT date, type
+    FROM collections
+    WHERE uprn = ?
+      AND date(date) >= date('now')
+    ORDER BY date ASC
+    LIMIT {int(limit)}
+    """
+
+    cursor.execute(query, (uprn,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return rows
