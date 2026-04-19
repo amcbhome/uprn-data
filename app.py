@@ -13,8 +13,9 @@ st.title("♻️ Bin Collection Dashboard")
 # --- Input ---
 uprn = st.text_input("Enter UPRN", value="127072473")
 
-# --- State ---
-rows = []
+# --- Session State ---
+if "rows" not in st.session_state:
+    st.session_state.rows = []
 
 # --- Action ---
 if st.button("Access current information"):
@@ -26,7 +27,8 @@ if st.button("Access current information"):
         else:
             st.success(f"Retrieved and stored {count} events")
 
-        rows = get_upcoming_collections(uprn)
+        # Store results in session state
+        st.session_state.rows = get_upcoming_collections(uprn)
 
     except Exception as e:
         st.error("An error occurred:")
@@ -36,8 +38,8 @@ if st.button("Access current information"):
 # --- Display ---
 st.subheader("Upcoming Collections")
 
-if rows:
-    for date, type_ in rows:
+if st.session_state.rows:
+    for date, type_ in st.session_state.rows:
         st.write(f"📅 {date} — {type_}")
 else:
     st.info("No data available. Click the button above.")
